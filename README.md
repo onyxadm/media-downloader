@@ -1,17 +1,17 @@
-# wa-download
+# media-downloader
 
 A simple library to decrypt and download WhatsApp media files directly from message payloads.
 
 ## Installation
 
 ```bash
-npm install @w3nder/wa-download
+npm install @w3nder/media-downloader
 ```
 
 ## Usage
 
 ```javascript
-import { decryptWhatsAppMedia } from '@w3nder/wa-download';
+import { decryptWhatsAppMedia } from '@w3nder/media-downloader';
 
 // Example with a document message
 const payload = {
