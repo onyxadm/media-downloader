@@ -79,6 +79,29 @@ const videoPayload = {
 }
 }
 
+const audioPayload = {
+  "message": {
+    "audioMessage": {
+      "url": "https://mmg.whatsapp.net/v/t62.7117-24/29040904_678887718168789_1127440511583808477_n.enc?ccb=11-4&oh=01_Q5Aa1QGgmzw2amTLYhR7fJeyAscfb4q6hUd7NceQFdXnv2vwCw&oe=68422846&_nc_sid=5e03e0&mms3=true",
+      "mimetype": "audio/ogg; codecs=opus",
+      "fileSha256": "pgu8L7XSPh/uN24fW75yC2UjEwG3lPOPfFzIJP630Nk=",
+      "fileLength": "6498",
+      "seconds": 3,
+      "ptt": true,
+      "mediaKey": "54dRIYpzVJNECjlR6f+r9osLdJu5R6HdtoIo/IPtMDw=",
+      "fileEncSha256": "8+cIUqnmFejKc7gmN6ro8O2+/N1x1xElAZ/LcdOLyXU=",
+      "directPath": "/v/t62.7117-24/29040904_678887718168789_1127440511583808477_n.enc?ccb=11-4&oh=01_Q5Aa1QGgmzw2amTLYhR7fJeyAscfb4q6hUd7NceQFdXnv2vwCw&oe=68422846&_nc_sid=5e03e0",
+      "mediaKeyTimestamp": "1746575006",
+      "contextInfo": {
+        "expiration": 0,
+        "ephemeralSettingTimestamp": "1745509478"
+      },
+      "streamingSidecar": "HLRJcM94JUW1sg==",
+      "waveform": "AQEBAQICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg=="
+    }
+  }
+}
+
 async function testDownloads() {
   try {
     console.log('📄 Baixando documento...');
@@ -92,6 +115,10 @@ async function testDownloads() {
     console.log('\n🎥 Baixando vídeo...');
     const videoResult = await decryptWhatsAppMedia(videoPayload, 'downloads');
     console.log('✅ Vídeo baixado:', videoResult);
+
+    console.log('\n🎵 Baixando áudio...');
+    const audioResult = await decryptWhatsAppMedia(audioPayload, 'downloads');
+    console.log('✅ Áudio baixado:', audioResult);
 
   } catch (error) {
     console.error('❌ Erro:', error);
