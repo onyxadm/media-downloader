@@ -76,9 +76,11 @@ export async function decryptWhatsAppMedia(
   const mediaType = MEDIA_TYPES[typeKey];
   const url = media.url;
   const mediaKeyBase64 = media.mediaKey;
-  const mime = media.mimetype || 'application/octet-stream';
-  const extension = mime.split('/')[1] || 'bin';
-  const fileName = media.fileName || `media_${Date.now()}.${extension}`;
+  const rawMime = media.mimetype || 'application/octet-stream';
+  const cleanMime = rawMime.split(';')[0].trim();
+  const extension = cleanMime.split('/')[1] || 'bin';
+  const rawFileName = media.fileName?.split(';')[0].trim();
+  const fileName = rawFileName ?? `media_${Date.now()}.${extension}`;
   const outputPath = join(outputDir, fileName);
 
   const info = INFO_MAP[mediaType];
@@ -107,7 +109,7 @@ export async function decryptWhatsAppMedia(
   return {
     outputPath,
     mediaType,
-    mimeType: mime,
+    mimeType: rawMime,
     fileName,
   };
 }
