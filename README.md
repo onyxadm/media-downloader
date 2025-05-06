@@ -41,7 +41,7 @@ The package includes an example that demonstrates how to download different type
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/w3nder/wa-download.git
+git clone https://github.com/w3nder/media-downloader.git
 cd wa-download
 ```
 
