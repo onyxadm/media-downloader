@@ -103,22 +103,44 @@ const audioPayload = {
 }
 
 async function testDownloads() {
+  const startTime = Date.now();
+  
   try {
     console.log('📄 Baixando documento...');
+    const docStartTime = Date.now();
     const docResult = await decryptWhatsAppMedia(documentPayload, 'downloads');
+    const docDuration = (Date.now() - docStartTime) / 1000;
     console.log('✅ Documento baixado:', docResult);
+    console.log(`⏱️ Tempo: ${docDuration.toFixed(2)}s`);
 
     console.log('\n🖼️ Baixando imagem...');
+    const imgStartTime = Date.now();
     const imageResult = await decryptWhatsAppMedia(imagePayload, 'downloads');
+    const imgDuration = (Date.now() - imgStartTime) / 1000;
     console.log('✅ Imagem baixada:', imageResult);
+    console.log(`⏱️ Tempo: ${imgDuration.toFixed(2)}s`);
 
     console.log('\n🎥 Baixando vídeo...');
+    const videoStartTime = Date.now();
     const videoResult = await decryptWhatsAppMedia(videoPayload, 'downloads');
+    const videoDuration = (Date.now() - videoStartTime) / 1000;
     console.log('✅ Vídeo baixado:', videoResult);
+    console.log(`⏱️ Tempo: ${videoDuration.toFixed(2)}s`);
 
     console.log('\n🎵 Baixando áudio...');
+    const audioStartTime = Date.now();
     const audioResult = await decryptWhatsAppMedia(audioPayload, 'downloads');
+    const audioDuration = (Date.now() - audioStartTime) / 1000;
     console.log('✅ Áudio baixado:', audioResult);
+    console.log(`⏱️ Tempo: ${audioDuration.toFixed(2)}s`);
+
+    const totalDuration = (Date.now() - startTime) / 1000;
+    console.log('\n📊 Resumo dos tempos:');
+    console.log(`   - Documento: ${docDuration.toFixed(2)}s`);
+    console.log(`   - Imagem: ${imgDuration.toFixed(2)}s`);
+    console.log(`   - Vídeo: ${videoDuration.toFixed(2)}s`);
+    console.log(`   - Áudio: ${audioDuration.toFixed(2)}s`);
+    console.log(`   - Total: ${totalDuration.toFixed(2)}s`);
 
   } catch (error) {
     console.error('❌ Erro:', error);
