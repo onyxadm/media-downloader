@@ -16,15 +16,27 @@ function hkdf(mediaKey: Buffer, length: number, info: Buffer): Buffer {
 class RemoveLastNBytes extends Transform {
   private buffer: Buffer;
   private readonly n: number;
+  private readonly chunkSize: number;
 
-  constructor(n: number) {
+  constructor(n: number, chunkSize = 64 * 1024) {
     super();
     this.n = n;
     this.buffer = Buffer.alloc(0);
+    this.chunkSize = chunkSize;
   }
 
   _transform(chunk: Buffer, _: string, callback: (error?: Error) => void): void {
-    this.buffer = Buffer.concat([this.buffer, chunk]);
+    if (this.buffer.length + chunk.length > this.chunkSize) {
+      const remainingSpace = this.chunkSize - this.buffer.length;
+      const firstPart = chunk.slice(0, remainingSpace);
+      const secondPart = chunk.slice(remainingSpace);
+      
+      this.buffer = Buffer.concat([this.buffer, firstPart]);
+      this.push(this.buffer);
+      this.buffer = secondPart;
+    } else {
+      this.buffer = Buffer.concat([this.buffer, chunk]);
+    }
     callback();
   }
 
@@ -94,10 +106,32 @@ export async function decryptWhatsAppMedia(
   const decipher = createDecipheriv('aes-256-cbc', key, iv);
   decipher.setAutoPadding(true);
 
+  let downloadedBytes = 0;
+  let totalBytes = 0;
+
   await new Promise<void>((resolve, reject) => {
     get(url, async res => {
       try {
-        await pipe(res, new RemoveLastNBytes(10), decipher, createWriteStream(outputPath));
+        totalBytes = parseInt(res.headers['content-length'] || '0', 10);
+        
+        const progressStream = new Transform({
+          transform(chunk: Buffer, _: string, callback: (error?: Error | null, data?: Buffer) => void): void {
+            downloadedBytes += chunk.length;
+            const progress = totalBytes ? (downloadedBytes / totalBytes * 100).toFixed(2) : 'unknown';
+            process.stdout.write(`\rDownloading: ${progress}%`);
+            callback(null, chunk);
+          }
+        });
+
+        await pipe(
+          res,
+          progressStream,
+          new RemoveLastNBytes(10),
+          decipher,
+          createWriteStream(outputPath)
+        );
+        
+        process.stdout.write('\n');
         resolve();
       } catch (err) {
         console.error('❌ Pipeline error:', err);
