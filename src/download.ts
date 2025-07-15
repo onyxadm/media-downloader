@@ -86,7 +86,7 @@ export async function decryptWhatsAppMedia(
   }
 
   const mediaType = MEDIA_TYPES[typeKey];
-  const url = media.url;
+  const url = media?.url ?? media?.URL;
   const mediaKeyBase64 = media.mediaKey;
   const rawMime = media.mimetype || 'application/octet-stream';
   const cleanMime = rawMime.split(';')[0].trim();
@@ -110,6 +110,11 @@ export async function decryptWhatsAppMedia(
   let totalBytes = 0;
 
   await new Promise<void>((resolve, reject) => {
+    if (!url) {
+      reject(new Error('URL not found in payload.'));
+      return;
+    }
+
     get(url, async res => {
       try {
         totalBytes = parseInt(res.headers['content-length'] || '0', 10);

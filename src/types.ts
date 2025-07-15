@@ -1,5 +1,6 @@
 export interface WhatsAppMediaMessage {
-  url: string;
+  url?: string;
+  URL?: string;
   mimetype?: string;
   mediaKey: string;
   fileLength?: string;
