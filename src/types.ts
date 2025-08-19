@@ -16,6 +16,11 @@ export interface WhatsAppPayload {
     videoMessage?: WhatsAppMediaMessage;
     documentMessage?: WhatsAppMediaMessage;
     stickerMessage?: WhatsAppMediaMessage;
+    documentWithCaptionMessage?: {
+      message?: {
+        documentMessage?: WhatsAppMediaMessage;
+      };
+    };
   };
 }
 
