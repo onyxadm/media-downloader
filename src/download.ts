@@ -30,7 +30,7 @@ class RemoveLastNBytes extends Transform {
       const remainingSpace = this.chunkSize - this.buffer.length;
       const firstPart = chunk.slice(0, remainingSpace);
       const secondPart = chunk.slice(remainingSpace);
-      
+
       this.buffer = Buffer.concat([this.buffer, firstPart]);
       this.push(this.buffer);
       this.buffer = secondPart;
@@ -56,6 +56,7 @@ const MEDIA_TYPES: Record<string, MediaType> = {
   videoMessage: 'video',
   documentMessage: 'document',
   stickerMessage: 'sticker',
+  documentWithCaptionMessage: 'document',
 } as const;
 
 const INFO_MAP: Record<MediaType, string> = {
@@ -79,7 +80,13 @@ export async function decryptWhatsAppMedia(
     throw new Error('Unsupported or missing media type.');
   }
 
-  const media = messageContent[typeKey];
+  let media;
+  if (typeKey === 'documentWithCaptionMessage') {
+    media = messageContent.documentWithCaptionMessage?.message?.documentMessage;
+  } else {
+    media = messageContent[typeKey];
+  }
+  if (!media) throw new Error('Media not found in payload.');
 
   if (!media) {
     throw new Error('Media not found in payload.');
@@ -118,7 +125,7 @@ export async function decryptWhatsAppMedia(
     get(url, async res => {
       try {
         totalBytes = parseInt(res.headers['content-length'] || '0', 10);
-        
+
         const progressStream = new Transform({
           transform(chunk: Buffer, _: string, callback: (error?: Error | null, data?: Buffer) => void): void {
             downloadedBytes += chunk.length;
@@ -135,7 +142,7 @@ export async function decryptWhatsAppMedia(
           decipher,
           createWriteStream(outputPath)
         );
-        
+
         process.stdout.write('\n');
         resolve();
       } catch (err) {
